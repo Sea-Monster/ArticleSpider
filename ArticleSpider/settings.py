@@ -68,8 +68,8 @@ ROBOTSTXT_OBEY = False
 ITEM_PIPELINES = {
    # 'ArticleSpider.pipelines.ArticlespiderPipeline': 300,
    # 'ArticleSpider.pipelines.ArticleImagePipeline': 1
-   'ArticleSpider.pipelines.MysqlPipeline': 2
-   # 'ArticleSpider.pipelines.MysqlTwistedPipeline': 3
+   # 'ArticleSpider.pipelines.MysqlPipeline': 2
+   'ArticleSpider.pipelines.MysqlTwistedPipeline': 3
 }
 IMAGES_URLS_FIELD = "front_image_url"
 project_dir = os.path.abspath(os.path.dirname(__file__))
