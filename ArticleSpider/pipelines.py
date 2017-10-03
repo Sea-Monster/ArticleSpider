@@ -8,6 +8,7 @@
 from scrapy.pipelines.images import ImagesPipeline
 import pymysql  #mysqlclient装不上，只好用这个了
 from twisted.enterprise import adbapi
+from twisted.internet.defer import Deferred
 
 class ArticlespiderPipeline(object):
     def process_item(self, item, spider):
@@ -50,22 +51,24 @@ class MysqlTwistedPipeline(object):
     def process_item(self, item, spider):
         # 使用Twisted将mysql插入变成异步执行
         query = self.dbpool.runInteraction(self.do_insert, item)
-        query.addErrback(self.handle_error, item, spider)
+        if isinstance(query, Deferred):
+            query.addErrback(self.handle_error, item, spider)
 
     def handle_error(self, failure, item, spider):
         # 处理异步插入的异常
         print(failure)
 
     def do_insert(self, cursor, item):
-        # 执行具体插入
-        insert_sql = """
-                    insert into jobbole_article(url_object_id,title,url,create_date,fav_nums,tags)
-                    VALUES (%s, %s, %s, %s, %s, %s)
-                """
-        cursor.execute(insert_sql,
-                            (item['url_object_id'], item['title'], item['url'],
-                             item['create_date'], item['fav_nums'],
-                             item['tags']))
+        """
+        执行具体插入
+        根据不同的item构建不同的sql语句并插入到mysql中
+        :param cursor:
+        :param item:
+        :return:
+        """
+        insert_sql, params = item.get_insert_sql()
+
+        cursor.execute(insert_sql, params)
 
 
 class ArticleImagePipeline(ImagesPipeline):

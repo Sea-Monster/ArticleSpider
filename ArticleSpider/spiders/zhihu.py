@@ -38,9 +38,12 @@ class ZhihuSpider(scrapy.Spider):
                 question_id = match_obj.group(2)
                 yield scrapy.Request(request_url, headers=self.headers,
                                      meta={'question_id': question_id}, callback=self.parse_question)
+                # 调试用：
+                break
             else:
                 # 如果不是question页面则直接进一步跟踪
                 yield scrapy.Request(url, headers=self.headers, callback=self.parse)
+                # pass
 
 
     def parse_question(self, response):
